@@ -1,0 +1,13 @@
+{
+    "display_name": "Sprite Lore",
+    "loading_order": 100,
+    "requires": [],
+    "optional": [
+        "expressions"
+    ],
+    "js": "index.js",
+    "css": "style.css",
+    "author": "Sprite Lore",
+    "version": "0.2.0",
+    "homePage": ""
+}

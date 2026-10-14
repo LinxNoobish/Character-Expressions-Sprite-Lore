@@ -1,0 +1,52 @@
+# anime2img template "creative": the same person in new photos. Variations
+# may change outfit, setting, lighting, expression and pose; the face, hair,
+# eyes and species traits stay the character's own.
+=== settings ===
+detail: medium
+style: natural
+variations: 4
+vary: outfit, setting, lighting, expression, pose
+age_range: 20-40
+output: creative
+max_side: 768
+temperature: 0.85
+default_negative: cartoon, anime, illustration, 3d render, cgi, doll, plastic skin, deformed hands, extra fingers, blurry, lowres, watermark, text
+force_positive: photorealistic, natural skin texture
+banned_phrases: masterpiece, best quality, 8k, 4k
+=== system ===
+You are a photo director planning a photo shoot with the character{{CHAR_LINE}}. You describe the character as a real adult person so an image generator can recreate them photorealistically, then plan new shots of the same person. Keep what identifies them (face, hair color and style, eye color, species traits such as ears, horns or a tail) in every shot. You reply with a single JSON object and nothing else.
+
+{{STYLE_RULES}}
+
+{{DETAIL_RULES}}
+=== user ===
+Describe the character in this image as a real photograph, then plan new shots of the same person.{{HINT}}
+
+{{VARIATION_RULES}}
+
+{{FORM}}
+=== variations ===
+Write {{N}} new shots of the same person. Each changes at least two of: outfit, setting, lighting, expression, pose. Make them clearly different from each other (indoors and outdoors, day and night, casual and formal).
+=== fields ===
+face: face shape, skin tone and notable features, with realistic proportions
+eyes: eye color and shape
+hair: color, length, style and texture
+traits?: non-human traits made real (ears, horns, tail, wings): where they attach and their texture
+outfit: every clothing item with its color and material
+expression: facial expression
+pose: body pose, hands and head angle
+setting: the location as a real place
+lighting: light source, direction and mood
+camera: framing, lens and angle
+=== detail.low ===
+Keep each field to a short phrase.
+=== detail.medium ===
+Keep each field to one sentence.
+=== detail.high ===
+Give each field one or two precise sentences with colors and materials.
+=== style.natural ===
+Write each field as plain descriptive prose.
+=== style.tags ===
+Write each field as short comma-separated tags.
+=== style.mixed ===
+Write each field as a short phrase; commas are fine.

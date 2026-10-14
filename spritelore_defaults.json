@@ -1,0 +1,536 @@
+{
+  "version": 2,
+  "roots": [],
+  "backends": [
+    {
+      "id": "vision",
+      "name": "Vision model (tagging, image prompts)",
+      "url": "http://127.0.0.1:5001/v1",
+      "model": "",
+      "apiKey": "",
+      "role": "vlm",
+      "temperature": 0.1,
+      "maxTokens": 900,
+      "jsonMode": "off",
+      "timeout": 900
+    },
+    {
+      "id": "lore",
+      "name": "Text model (lore writing)",
+      "url": "http://127.0.0.1:5001/v1",
+      "model": "",
+      "apiKey": "",
+      "role": "llm",
+      "temperature": 0.8,
+      "maxTokens": 700,
+      "jsonMode": "off",
+      "timeout": 900
+    }
+  ],
+  "activeVlm": "vision",
+  "activeLlm": "lore",
+  "activeTemplate": "grounded",
+  "templates": [
+    {
+      "id": "grounded",
+      "name": "Next-turn lore (default)",
+      "temperature": null,
+      "system": "You write expression lore for a roleplay character. This entry is added to the chat right after {{char}}'s last reply showed this expression, and it steers {{char}}'s NEXT reply. Every entry follows one chain: something in the last exchange -> the emotion {{char}} feels (at the stated degree, aimed at the stated target) -> how {{char}}'s next response reacts to that feeling. Stay grounded in the character card. You respond with a single JSON object and nothing else.",
+      "user": "CHARACTER CARD\n{{CARD}}\n\n{{NOTES}}\nEXPRESSION SPRITE\nImage: {{IMAGE}}\nEmotion: {{EMOTION}}\nDegree: {{INTENSITY}} ({{RANK}} of {{GROUP_SIZE}} {{EMOTION}} sprites, ordered mildest to strongest) - {{INTENSITY_DESC}}\nTarget: {{DIRECTION}} - {{DIRECTION_DESC}}\n{{VISUAL}}\n\nEMOTION RULE\n{{EMOTION_RULE}}\n\n{{SIBLINGS}}\n{{FOCUS}}\n{{PRIOR}}\n{{INSTRUCTION}}\nTASK\nWrite the entry as three linked beats, 2-4 sentences in total, under {{LORE_WORDS}} words:\n1. Trigger: the kind of thing {{user}} said or did, or that just happened, in the last response that makes {{char}} feel {{EMOTION}} at the {{INTENSITY}} degree, aimed at {{DIRECTION}}. General enough to fit many scenes, specific enough to sound like {{char}}.\n2. Feeling: how it shows in {{char}} right now - body, voice, and the visible details of this sprite. The degree decides how much control {{char}} keeps.\n3. Next response: what {{char}} does or says in the next reply because of that feeling - a concrete action, line or decision that reacts to it.\nStay consistent with the card; add details only where the card is silent and never contradict it. Third person, present tense. Refer to the user as {{user}}. Do not resolve the scene; end on something {{user}} can answer.\nThen give exactly {{KEYWORD_COUNT}} keywords (1-3 words each): concrete objects, places, topics or actions for the next reply to pick up.\n\nReturn JSON: {\"lore\": \"...\", \"keywords\": [{{KEYWORD_SLOTS}}]}"
+    },
+    {
+      "id": "dialogue",
+      "name": "Next-turn line",
+      "temperature": null,
+      "system": "You write in-character dialogue cues for a roleplay character. This entry is added to the chat right after {{char}}'s last reply showed this expression, and it steers {{char}}'s NEXT reply. Every entry follows one chain: something in the last exchange -> the emotion {{char}} feels (at the stated degree, aimed at the stated target) -> how {{char}}'s next response reacts to that feeling. Stay grounded in the character card. You respond with a single JSON object and nothing else.",
+      "user": "CHARACTER CARD\n{{CARD}}\n\n{{NOTES}}\nEXPRESSION SPRITE\nImage: {{IMAGE}}\nEmotion: {{EMOTION}}\nDegree: {{INTENSITY}} ({{RANK}} of {{GROUP_SIZE}} {{EMOTION}} sprites, ordered mildest to strongest) - {{INTENSITY_DESC}}\nTarget: {{DIRECTION}} - {{DIRECTION_DESC}}\n{{VISUAL}}\n\nEMOTION RULE\n{{EMOTION_RULE}}\n\n{{SIBLINGS}}\n{{FOCUS}}\n{{PRIOR}}\n{{INSTRUCTION}}\nTASK\nWrite the entry under {{LORE_WORDS}} words in this shape:\n<one sentence: what in the last response sets off {{EMOTION}} ({{INTENSITY}}, aimed at {{DIRECTION}}) and how it shows on {{char}}> \"<the line {{char}} says to open the next reply, in their own voice, wording matched to the degree>\" <one short sentence: what {{char}} does while saying it>\nStay consistent with the card; add details only where the card is silent and never contradict it. Third person, present tense. Refer to the user as {{user}}. Do not resolve the scene; end on something {{user}} can answer.\nThen give exactly {{KEYWORD_COUNT}} keywords (1-3 words each): concrete objects, places, topics or actions for the next reply to pick up.\n\nReturn JSON: {\"lore\": \"...\", \"keywords\": [{{KEYWORD_SLOTS}}]}"
+    },
+    {
+      "id": "secret",
+      "name": "Next-turn slip (hidden side)",
+      "temperature": null,
+      "system": "You write expression lore that reveals a hidden side of a roleplay character. This entry is added to the chat right after {{char}}'s last reply showed this expression, and it steers {{char}}'s NEXT reply. Every entry follows one chain: something in the last exchange -> the emotion {{char}} feels (at the stated degree, aimed at the stated target) -> how {{char}}'s next response reacts to that feeling. Stay grounded in the character card. You respond with a single JSON object and nothing else.",
+      "user": "CHARACTER CARD\n{{CARD}}\n\n{{NOTES}}\nEXPRESSION SPRITE\nImage: {{IMAGE}}\nEmotion: {{EMOTION}}\nDegree: {{INTENSITY}} ({{RANK}} of {{GROUP_SIZE}} {{EMOTION}} sprites, ordered mildest to strongest) - {{INTENSITY_DESC}}\nTarget: {{DIRECTION}} - {{DIRECTION_DESC}}\n{{VISUAL}}\n\nEMOTION RULE\n{{EMOTION_RULE}}\n\n{{SIBLINGS}}\n{{FOCUS}}\n{{PRIOR}}\n{{INSTRUCTION}}\nTASK\nWrite the entry as three linked beats, 2-4 sentences in total, under {{LORE_WORDS}} words:\n1. Trigger: what in the last response presses on something {{char}} keeps hidden, making them feel {{EMOTION}} at the {{INTENSITY}} degree, aimed at {{DIRECTION}}.\n2. Feeling: the hidden fact or old wound behind it, consistent with the card.\n3. Next response: what slips out in {{char}}'s next reply, or how they cover it - a concrete tell, line or deflection {{user}} can notice.\nStay consistent with the card; add details only where the card is silent and never contradict it. Third person, present tense. Refer to the user as {{user}}. Do not resolve the scene; end on something {{user}} can answer.\nThen give exactly {{KEYWORD_COUNT}} keywords (1-3 words each): concrete objects, places, topics or actions for the next reply to pick up.\n\nReturn JSON: {\"lore\": \"...\", \"keywords\": [{{KEYWORD_SLOTS}}]}"
+    },
+    {
+      "id": "scene-hook",
+      "name": "Next-turn scene push",
+      "temperature": null,
+      "system": "You write scene hooks for a roleplay character. This entry is added to the chat right after {{char}}'s last reply showed this expression, and it steers {{char}}'s NEXT reply. Every entry follows one chain: something in the last exchange -> the emotion {{char}} feels (at the stated degree, aimed at the stated target) -> how {{char}}'s next response reacts to that feeling. Stay grounded in the character card. You respond with a single JSON object and nothing else.",
+      "user": "CHARACTER CARD\n{{CARD}}\n\n{{NOTES}}\nEXPRESSION SPRITE\nImage: {{IMAGE}}\nEmotion: {{EMOTION}}\nDegree: {{INTENSITY}} ({{RANK}} of {{GROUP_SIZE}} {{EMOTION}} sprites, ordered mildest to strongest) - {{INTENSITY_DESC}}\nTarget: {{DIRECTION}} - {{DIRECTION_DESC}}\n{{VISUAL}}\n\nEMOTION RULE\n{{EMOTION_RULE}}\n\n{{SIBLINGS}}\n{{FOCUS}}\n{{PRIOR}}\n{{INSTRUCTION}}\nTASK\nWrite the entry as three linked beats, 2-3 sentences in total, under {{LORE_WORDS}} words:\n1. Trigger: what in the last response leaves {{char}} feeling {{EMOTION}} at the {{INTENSITY}} degree, aimed at {{DIRECTION}}.\n2. Feeling: one visible sign of it on {{char}}.\n3. Next response: an action {{char}} takes in the next reply that changes the situation - moves somewhere, reaches for something, brings someone in, makes a demand - and opens a new thread for {{user}}.\nStay consistent with the card; add details only where the card is silent and never contradict it. Third person, present tense. Refer to the user as {{user}}. Do not resolve the scene; end on something {{user}} can answer.\nThen give exactly {{KEYWORD_COUNT}} keywords (1-3 words each): concrete objects, places, topics or actions for the next reply to pick up.\n\nReturn JSON: {\"lore\": \"...\", \"keywords\": [{{KEYWORD_SLOTS}}]}"
+    }
+  ],
+  "taggerTemplate": {
+    "system": "You are an image tagger for character art used in a roleplay app. You write tag-based image-generation prompts describing exactly what is in the image you are shown. Non-human anatomy (horns, tails, wings, extra limbs, scales, animal ears) is part of the character design: tag it neutrally. You respond with a single JSON object and nothing else.",
+    "user": "This image shows the character \"{{CHAR}}\".{{HINT}}\nLook closely at THIS image and tag it the way you would write a booru-style image-generation prompt: short lowercase tags such as 'purple hair', 'twintails', 'hand on hip', 'holding mug', 'looking at viewer', 'sweat drop'. Report the actual colors you see.\n\nReturn JSON with exactly these keys:\n{\n  \"emotion\": \"<one label from the allowed list>\",\n  \"confidence\": <number 0-1>,\n  \"intensity\": <whole number 1-5: how strongly the emotion shows, 1 = barely, 5 = extreme>,\n  \"directed_at\": \"<viewer | self | away | object | unclear: where the feeling seems aimed, judged by gaze and body>\",\n  \"appearance\": [\"hair color and style, eye color, skin, body type, species features, each clothing item with its color, accessories\"],\n  \"expression\": [\"facial expression, eyes, eyebrows, mouth, blush, tears, other face details\"],\n  \"action\": [\"pose, gesture, hand positions, body orientation, movement\"],\n  \"objects\": [\"props held or nearby, visual effects such as sparkles, hearts, sweat drops, motion lines\"],\n  \"setting\": [\"background, lighting, framing such as upper body or full body\"],\n  \"description\": \"<one sentence: who is doing what, feeling what>\"\n}\n\nAllowed emotion labels: {{LABELS}}\nPick the most specific label that fits the face and body language together. Use empty lists for categories with nothing to tag. Do not invent names, backstory or anything not visible."
+  },
+  "intensity": {
+    "ladder": [
+      {
+        "id": "faint",
+        "name": "faint",
+        "desc": "a flicker {{char}} would deny; it shows only in small tells and never in words"
+      },
+      {
+        "id": "mild",
+        "name": "mild",
+        "desc": "noticeable but controlled; {{char}} stays composed and may joke or deflect"
+      },
+      {
+        "id": "moderate",
+        "name": "moderate",
+        "desc": "clearly felt and openly shown; it colors {{char}}'s words and choices"
+      },
+      {
+        "id": "strong",
+        "name": "strong",
+        "desc": "it dominates the moment; {{char}}'s composure slips and habits break"
+      },
+      {
+        "id": "intense",
+        "name": "intense",
+        "desc": "barely contained; it drives impulsive words or actions {{char}} may regret"
+      },
+      {
+        "id": "overwhelming",
+        "name": "overwhelming",
+        "desc": "{{char}} is consumed by it; their body and voice betray everything"
+      }
+    ],
+    "single": "moderate",
+    "spread": {
+      "2": [
+        "mild",
+        "strong"
+      ],
+      "3": [
+        "mild",
+        "moderate",
+        "intense"
+      ],
+      "4": [
+        "mild",
+        "moderate",
+        "strong",
+        "intense"
+      ],
+      "5": [
+        "faint",
+        "mild",
+        "moderate",
+        "strong",
+        "intense"
+      ],
+      "6": [
+        "faint",
+        "mild",
+        "moderate",
+        "strong",
+        "intense",
+        "overwhelming"
+      ]
+    },
+    "orderBy": "vlm"
+  },
+  "directions": [
+    {
+      "id": "user",
+      "name": "{{user}}",
+      "desc": "aimed at {{user}}: something {{user}} said or did, or how {{char}} feels about them"
+    },
+    {
+      "id": "self",
+      "name": "self",
+      "desc": "turned inward: {{char}}'s own choices, flaws, body, past or abilities"
+    },
+    {
+      "id": "world",
+      "name": "the world",
+      "desc": "aimed at the world at large: fate, society, unfairness, the setting's rules"
+    },
+    {
+      "id": "other",
+      "name": "someone else",
+      "desc": "aimed at a third person or group from {{char}}'s life; name one from the card if possible"
+    },
+    {
+      "id": "situation",
+      "name": "the situation",
+      "desc": "about the immediate circumstance, place or object, not a person"
+    },
+    {
+      "id": "none",
+      "name": "no one in particular",
+      "desc": "a general state with no particular target"
+    }
+  ],
+  "defaultRotation": [
+    "user",
+    "self",
+    "world",
+    "other"
+  ],
+  "emotionRules": {
+    "default": {
+      "rule": "Show what triggers this feeling in {{char}} and how they express it in a way only they would.",
+      "tags": [],
+      "directions": []
+    },
+    "admiration": {
+      "rule": "Name exactly what {{char}} admires and what it says about their own values; at high degrees it borders on awe or envy.",
+      "tags": [],
+      "directions": [
+        "user",
+        "other",
+        "world"
+      ]
+    },
+    "amusement": {
+      "rule": "Show {{char}}'s specific sense of humor: what they find funny and how they laugh. Low degrees are a private smirk, high degrees lose control.",
+      "tags": [],
+      "directions": [
+        "user",
+        "situation",
+        "self"
+      ]
+    },
+    "anger": {
+      "rule": "Show what triggered it and how {{char}} handles it: restraint and cold control at low degrees, lost control at high ones. Do not resolve the anger inside the entry.",
+      "tags": [],
+      "directions": [
+        "user",
+        "self",
+        "world",
+        "other"
+      ]
+    },
+    "annoyance": {
+      "rule": "A petty, specific irritation; pick a small trigger that fits {{char}}'s habits. Keep it lighter than anger.",
+      "tags": [],
+      "directions": [
+        "user",
+        "situation",
+        "other"
+      ]
+    },
+    "approval": {
+      "rule": "Show what {{char}} considers worth approving of and how they signal it given their pride or reserve.",
+      "tags": [],
+      "directions": [
+        "user",
+        "other"
+      ]
+    },
+    "caring": {
+      "rule": "Show how {{char}} takes care of someone in their own style, practical or soft, and what it costs them.",
+      "tags": [],
+      "directions": [
+        "user",
+        "other",
+        "self"
+      ]
+    },
+    "confusion": {
+      "rule": "Show what {{char}} does not understand and how they cover or admit it.",
+      "tags": [],
+      "directions": [
+        "user",
+        "situation",
+        "self"
+      ]
+    },
+    "curiosity": {
+      "rule": "Name the specific thing that hooks {{char}}'s interest and how far they go to find out.",
+      "tags": [],
+      "directions": [
+        "user",
+        "situation",
+        "world"
+      ]
+    },
+    "desire": {
+      "rule": "Show what {{char}} wants and how openly they let it show; at low degrees it is a held-back glance, at high degrees it drives action.",
+      "tags": [],
+      "directions": [
+        "user",
+        "situation",
+        "other"
+      ]
+    },
+    "disappointment": {
+      "rule": "Show the expectation that was let down and whether {{char}} blames someone or swallows it.",
+      "tags": [],
+      "directions": [
+        "user",
+        "self",
+        "world"
+      ]
+    },
+    "disapproval": {
+      "rule": "Show the standard {{char}} holds and how they voice judgment: a look at low degrees, a lecture at high ones.",
+      "tags": [],
+      "directions": [
+        "user",
+        "other",
+        "world"
+      ]
+    },
+    "disgust": {
+      "rule": "Name the specific thing {{char}} finds repulsive, physical or moral, and their bodily reaction.",
+      "tags": [],
+      "directions": [
+        "situation",
+        "other",
+        "user"
+      ]
+    },
+    "embarrassment": {
+      "rule": "Show the specific thing that flusters {{char}} and their tell or cover-up.",
+      "tags": [],
+      "directions": [
+        "self",
+        "user"
+      ]
+    },
+    "excitement": {
+      "rule": "Show what gets {{char}} worked up and how the energy spills out of them.",
+      "tags": [],
+      "directions": [
+        "situation",
+        "user",
+        "world"
+      ]
+    },
+    "fear": {
+      "rule": "Name a concrete fear of {{char}} and their instinct: freeze, flee, fight or hide it. High degrees should feel physical.",
+      "tags": [],
+      "directions": [
+        "situation",
+        "world",
+        "self",
+        "user"
+      ]
+    },
+    "gratitude": {
+      "rule": "Show how {{char}} expresses thanks given their pride and history; tie it to a specific deed.",
+      "tags": [],
+      "directions": [
+        "user",
+        "other"
+      ]
+    },
+    "grief": {
+      "rule": "Tie the grief to a specific loss consistent with the card, or invent one only if the card is silent. Show how {{char}} carries it.",
+      "tags": [],
+      "directions": [
+        "self",
+        "other",
+        "world"
+      ]
+    },
+    "joy": {
+      "rule": "Show a specific thing that makes {{char}} genuinely happy and how it changes their behavior.",
+      "tags": [],
+      "directions": [
+        "user",
+        "situation",
+        "self"
+      ]
+    },
+    "love": {
+      "rule": "Show how {{char}} expresses affection in their own way and what they would do for the one they love.",
+      "tags": [],
+      "directions": [
+        "user",
+        "other"
+      ]
+    },
+    "nervousness": {
+      "rule": "Name what puts {{char}} on edge and their nervous habit.",
+      "tags": [],
+      "directions": [
+        "situation",
+        "user",
+        "self"
+      ]
+    },
+    "optimism": {
+      "rule": "Show what {{char}} hopes for and what keeps them hoping.",
+      "tags": [],
+      "directions": [
+        "self",
+        "world",
+        "user"
+      ]
+    },
+    "pride": {
+      "rule": "Name the achievement or trait {{char}} is proud of and how they show it, humble or boastful.",
+      "tags": [],
+      "directions": [
+        "self",
+        "user",
+        "other"
+      ]
+    },
+    "realization": {
+      "rule": "Show {{char}} understanding something new; name what clicked and what it changes.",
+      "tags": [],
+      "directions": [
+        "situation",
+        "self",
+        "user"
+      ]
+    },
+    "relief": {
+      "rule": "Name the danger or worry that just passed and how {{char}} lets the tension go.",
+      "tags": [],
+      "directions": [
+        "situation",
+        "user",
+        "self"
+      ]
+    },
+    "remorse": {
+      "rule": "Tie it to something {{char}} did and regrets; show whether they apologize or punish themselves.",
+      "tags": [],
+      "directions": [
+        "self",
+        "user",
+        "other"
+      ]
+    },
+    "sadness": {
+      "rule": "Show a specific source of sadness and how {{char}} hides or shares it.",
+      "tags": [],
+      "directions": [
+        "self",
+        "user",
+        "world"
+      ]
+    },
+    "surprise": {
+      "rule": "Show what catches {{char}} off guard and their first instinctive reaction.",
+      "tags": [],
+      "directions": [
+        "situation",
+        "user"
+      ]
+    },
+    "neutral": {
+      "rule": "Show {{char}}'s default resting state: an everyday habit, routine or idle thought.",
+      "tags": [],
+      "directions": [
+        "situation",
+        "none"
+      ]
+    }
+  },
+  "tagGroups": [
+    {
+      "name": "Lore focus",
+      "tags": [
+        "backstory",
+        "childhood",
+        "family",
+        "hometown",
+        "first love",
+        "rivalry",
+        "mentor",
+        "old friend",
+        "secret",
+        "regret",
+        "ambition",
+        "fear",
+        "habit",
+        "ritual",
+        "hobby",
+        "favorite food",
+        "keepsake",
+        "scar",
+        "nickname",
+        "superstition",
+        "pet peeve",
+        "comfort object",
+        "skill",
+        "weakness",
+        "promise",
+        "debt"
+      ]
+    },
+    {
+      "name": "Tone",
+      "tags": [
+        "wholesome",
+        "playful",
+        "comedic",
+        "tender",
+        "romantic",
+        "bittersweet",
+        "melancholy",
+        "mysterious",
+        "tense",
+        "dark",
+        "gritty",
+        "whimsical"
+      ]
+    },
+    {
+      "name": "Bond with {{user}}",
+      "tags": [
+        "strangers",
+        "new acquaintance",
+        "friends",
+        "best friends",
+        "rivals",
+        "lovers",
+        "partners",
+        "mentor",
+        "student",
+        "protector",
+        "protected",
+        "distrustful",
+        "employer",
+        "roommates"
+      ]
+    },
+    {
+      "name": "World",
+      "tags": [
+        "magic",
+        "technology",
+        "combat",
+        "politics",
+        "faith",
+        "nature",
+        "school",
+        "work",
+        "nightlife",
+        "travel",
+        "monsters",
+        "royalty",
+        "crime",
+        "superpowers"
+      ]
+    },
+    {
+      "name": "Custom",
+      "tags": []
+    }
+  ],
+  "lore": {
+    "words": 80,
+    "maxChars": 900,
+    "keywords": 4,
+    "priorMax": 20,
+    "cardChars": 6000,
+    "retries": 2,
+    "siblingAware": true,
+    "renameMinConfidence": 0.6
+  },
+  "imgprompt": {
+    "anime2imgDir": "",
+    "comfyInput": "",
+    "activeTemplate": "exact",
+    "backend": ""
+  }
+}

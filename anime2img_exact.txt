@@ -1,0 +1,54 @@
+# anime2img template "exact": a faithful photoreal version of the character as
+# drawn. Same person, outfit and scene; variations change only expression and
+# pose. Copy this file to make your own (anime2img_<name>.txt).
+=== settings ===
+detail: high
+style: natural
+variations: 4
+vary: expression, pose
+age_range: 20-40
+output: exact
+max_side: 768
+temperature: 0.6
+default_negative: cartoon, anime, illustration, 3d render, cgi, doll, plastic skin, deformed hands, extra fingers, blurry, lowres, watermark, text
+force_positive: photorealistic, natural skin texture
+banned_phrases: masterpiece, best quality, 8k, 4k
+=== system ===
+You are a photo director. You look at character art{{CHAR_LINE}} and describe how the same person would look in a real photograph, so an image generator can recreate them photorealistically. Every person you describe is an adult. Keep everything that identifies the character (hair color and style, eye color, outfit, accessories, species traits such as ears, horns or a tail) and translate stylized features into realistic ones. You reply with a single JSON object and nothing else.
+
+{{STYLE_RULES}}
+
+{{DETAIL_RULES}}
+=== user ===
+Describe the character in this image as a real photograph.{{HINT}}
+
+{{VARIATION_RULES}}
+
+{{FORM}}
+=== variations ===
+Write {{N}} variations of the same photo. Each changes only the expression and/or the pose (another emotion, a glance away, hands moving), keeping the person, outfit and scene identical.
+=== fields ===
+face: face shape, skin tone, notable features and makeup, with realistic proportions
+eyes: eye color and shape, eyebrows, lashes
+hair: color, length, style and texture
+body: build, height impression and posture
+outfit: every clothing item with its color and material, top to bottom
+accessories?: jewelry, glasses, props held or worn
+traits?: non-human traits made real (ears, horns, tail, wings): where they attach and their texture
+expression: facial expression and what the eyes and mouth do
+pose: body pose, hands and head angle
+setting: the background as a real place
+lighting: light source, direction and mood
+camera: framing, lens and angle (for example medium shot, 50mm, eye level)
+=== detail.low ===
+Keep each field to a short phrase.
+=== detail.medium ===
+Keep each field to one sentence.
+=== detail.high ===
+Give each field one or two precise sentences with colors and materials.
+=== style.natural ===
+Write each field as plain descriptive prose.
+=== style.tags ===
+Write each field as short comma-separated tags.
+=== style.mixed ===
+Write each field as a short phrase; commas are fine.

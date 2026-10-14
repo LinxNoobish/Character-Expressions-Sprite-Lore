@@ -1,0 +1,16 @@
+# Style words anime2img removes from or replaces in the positive prompt.
+# remove        removed, and added to the negative prompt
+# remove_only   removed silently
+# replace       "old, other old => new"
+# always_negative  always in the negative prompt
+# protect       never moved to the negative (e.g. a trait you want kept)
+=== remove ===
+anime, anime style, manga, manga style, cel shading, cel-shaded, chibi, 2d, 3d render, 3d model, cgi, illustration, digital art, digital painting, artwork, cartoon, toon shading, vtuber, game screenshot, unreal engine, octane render, line art, lineart, flat colors
+=== remove_only ===
+1girl, 1boy, solo, masterpiece, best quality, highly detailed
+=== replace ===
+anime eyes, large anime eyes => large expressive eyes
+cel-shaded skin, flat shaded skin => natural skin
+=== always_negative ===
+anime, cartoon, illustration, 3d render
+=== protect ===
